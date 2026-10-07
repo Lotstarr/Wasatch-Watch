@@ -1,8 +1,8 @@
-import './art.js?v=readability-1';
+import './art.js?v=placement-1';
 const canvas=document.querySelector('#game'),ctx=canvas.getContext('2d'),$=id=>document.getElementById(id);
 const levels=[
-{id:'foothills',name:'Campus Foothills',description:'Hold the canyon trail above the valley.',gold:270,path:[[-35,125],[180,125],[290,250],[480,250],[580,440],[810,440],[930,565],[1120,565]],sites:[[135,215],[280,145],[365,340],[500,155],[530,525],[665,345],[780,535],[890,340],[965,465]]},
-{id:'canyon',name:'Provo Canyon',description:'Two entrances. One bridge. Decide where your defense must hold.',gold:250,path:[[-35,145],[210,145],[360,285],[600,285],[690,440],[840,440],[940,565],[1120,565]],routes:[[[-35,145],[210,145],[360,285],[600,285],[690,440],[840,440],[940,565],[1120,565]],[[-35,510],[190,510],[330,390],[440,390],[600,285],[690,440],[840,440],[940,565],[1120,565]]],sites:[[140,225],[290,220],[245,425],[475,310],[635,360],[790,535],[915,450]]},
+{id:'foothills',name:'Campus Foothills',description:'Hold the canyon trail above the valley.',gold:270,path:[[-35,125],[180,125],[290,250],[480,250],[580,440],[810,440],[930,565],[1120,565]],sites:[[135,290],[300,110],[365,400],[500,155],[500,600],[665,345],[760,625],[890,340],[965,465]]},
+{id:'canyon',name:'Provo Canyon',description:'Two entrances. One bridge. Decide where your defense must hold.',gold:250,path:[[-35,145],[210,145],[360,285],[600,285],[690,440],[840,440],[940,565],[1120,565]],routes:[[[-35,145],[210,145],[360,285],[600,285],[690,440],[840,440],[940,565],[1120,565]],[[-35,510],[190,510],[330,390],[440,390],[600,285],[690,440],[840,440],[940,565],[1120,565]]],sites:[[140,300],[320,110],[130,435],[475,200],[555,505],[790,610],[925,365]]},
 {id:'aspen',name:'Aspen Grove'},{id:'summit',name:'Alpine Summit'},{id:'redrock',name:'Red Rock Passage'},{id:'stronghold',name:'Wasatch Stronghold'}];
 let level=levels[0],path=level.path,sites=level.sites,lens,total,routeInfo;
 function configureMap(){path=level.path;sites=level.sites;lens=path.slice(1).map((p,i)=>Math.hypot(p[0]-path[i][0],p[1]-path[i][1]));total=lens.reduce((a,b)=>a+b,0);routeInfo=(level.routes||[path]).map(points=>{const lengths=points.slice(1).map((p,i)=>Math.hypot(p[0]-points[i][0],p[1]-points[i][1]));return{points,lengths,total:lengths.reduce((a,b)=>a+b,0)};});}

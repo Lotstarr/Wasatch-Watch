@@ -50,3 +50,6 @@ Characters are rendered from the original atlas with movement bobbing and status
 
 ## Readability pass
 Larger desktop text, high-contrast labels and health bars, dedicated resource and ability strips, readable disabled controls and a wider tower panel. Specialist targeting has inline fallback guidance. Expired temporary defenders and exhausted cave squads stop combat immediately; held shortcut keys no longer repeatedly toggle pause or speed.
+
+## Tower placement clearance
+Both maps use revised build sites that keep tower artwork off all road segments. A regression check samples every route against a conservative tower rectangle (48 half-width, 125 above and 42 below its anchor) plus 24 road half-width. Full affordable defenses still complete Foothills (8 lives) and both canyon strategies (7 lives). These positions change coverage; earlier simulation life totals describe older layouts. Football defenders intentionally deploy on the trail to block enemies.

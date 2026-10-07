@@ -35,8 +35,8 @@ assert.equal(wave,8);assert.ok(lives>0);assert.equal(finished,true);
 console.log('PASS: affordable mixed-tower strategy completes all eight waves and the boss with '+lives+' lives.');
 `,context);
 vm.runInContext(`
-reset();selected=0;build('ranger');spawn('moss');enemies[0].d=170;const before=enemies[0].hp;update(1/60);assert.equal(enemies[0].hp,before);assert.equal(projectiles.length,1);for(let i=0;i<30;i++)update(1/60);assert.ok(enemies[0].hp<before);
-reset();selected=0;build('snow');spawn('moss');enemies[0].d=170;for(let i=0;i<60;i++)update(1/60);assert.ok(enemies[0].slow>0);assert.ok(enemies[0].freezeCooldown>0);
+reset();selected=0;build('ranger');spawn('moss');enemies[0].d=towers[0].rally;const before=enemies[0].hp;update(1/60);assert.equal(enemies[0].hp,before);assert.equal(projectiles.length,1);for(let i=0;i<30;i++)update(1/60);assert.ok(enemies[0].hp<before);
+reset();selected=1;build('snow');spawn('moss');enemies[0].d=towers[0].rally;for(let i=0;i<60;i++)update(1/60);assert.ok(enemies[0].slow>0);assert.ok(enemies[0].freezeCooldown>0);
 reset();selected=0;build('cave');gold=1000;upgrade(towers[0]);upgrade(towers[0]);upgrade(towers[0],'A');assert.equal(towers[0].rate,.8);assert.equal(towers[0].tier,4);
 console.log('PASS: projectiles delay damage until impact, snow control applies on impact, and Defensive Line keeps its stated attack rate.');
 `,context);
@@ -51,14 +51,14 @@ console.log('PASS: campaign locks, per-level saves, best-star preservation, armo
 `,context);
 vm.runInContext(`
 level=levels[0];configureMap();reset();const armorTarget={hp:100,kind:'rock',reward:14,dead:false,d:0,freezeCooldown:0};hit(armorTarget,20,{kind:'snow'});assert.equal(armorTarget.hp,73);assert.ok(armorTarget.slow>0);
-selected=0;build('bees');spawn('moss');spawn('flyer');spawn('rock');for(const e of enemies)e.d=170;update(1/60);assert.equal(swarms.length,3);assert.equal(new Set(swarms.map(s=>s.target)).size,3);assert.equal(towers[0].damage,2);for(let i=0;i<100;i++)update(1/60);assert.ok(enemies.every(e=>e.hp<e.max));
+selected=1;build('bees');spawn('moss');spawn('flyer');spawn('rock');for(const e of enemies)e.d=towers[0].rally;update(1/60);assert.equal(swarms.length,3);assert.equal(new Set(swarms.map(s=>s.target)).size,3);assert.equal(towers[0].damage,2);for(let i=0;i<100;i++)update(1/60);assert.ok(enemies.every(e=>e.hp<e.max));
 console.log('PASS: Snowmaker bypasses shields with 35% bonus damage; Beehive launches lowered-damage swarms at every in-range enemy.');
 `,context);
 vm.runInContext(`
 reset();level=levels[1];configureMap();reset();wave=3;spawn('splitter',300);const parent=enemies[0],startingGold=gold;hit(parent,1000,{kind:'ranger'});assert.equal(enemies.filter(e=>e.kind==='shard').length,2);assert.equal(gold,startingGold+6);assert.ok(enemies.filter(e=>e.kind==='shard').every(e=>e.d<=300&&e.d>=284));hit(parent,1000,{kind:'ranger'});assert.equal(enemies.filter(e=>e.kind==='shard').length,2);
-reset();selected=0;build('ranger');spawn('moss',180);spawn('flyer',150);towers[0].targeting='flyers';update(1/60);assert.equal(projectiles[0].target.kind,'flyer');
-reset();selected=0;build('ranger');spawn('moss',180);spawn('rock',150);towers[0].targeting='strongest';update(1/60);assert.equal(projectiles[0].target.kind,'rock');
-reset();selected=0;build('ranger');spawn('moss',180);spawn('rock',150);update(1/60);assert.equal(projectiles[0].target.kind,'moss');
+reset();selected=0;build('ranger');spawn('moss',towers[0].rally+20);spawn('flyer',towers[0].rally-10);towers[0].targeting='flyers';update(1/60);assert.equal(projectiles[0].target.kind,'flyer');
+reset();selected=0;build('ranger');spawn('moss',towers[0].rally+20);spawn('rock',towers[0].rally-10);towers[0].targeting='strongest';update(1/60);assert.equal(projectiles[0].target.kind,'rock');
+reset();selected=0;build('ranger');spawn('moss',towers[0].rally+20);spawn('rock',towers[0].rally-10);update(1/60);assert.equal(projectiles[0].target.kind,'moss');
 reset();const expected=Object.values(wavePlans.canyon[0][1]).reduce((a,b)=>a+b,0);nextWave();assert.equal(pending.length,expected);assert.ok(wavePreview().includes('Shield guards'));assert.ok(wavePreview().includes('SOUTH'));
 console.log('PASS: splitter children and rewards occur once, all three targeting priorities, and previews match authored wave plans.');
 `,context);
@@ -76,9 +76,9 @@ console.log('PASS: both illustrated maps, tower tiers, every enemy type, status 
 vm.runInContext(`
 level=levels[0];configureMap();reset();selected=0;build('ranger');gold=1000;let preview=upgradeStats(towers[0]);upgrade(towers[0]);assert.equal(towers[0].damage,preview.damage);assert.equal(towers[0].range,preview.range);assert.equal(towers[0].rate,preview.rate);upgrade(towers[0]);preview=upgradeStats(towers[0],'B');upgrade(towers[0],'B');assert.equal(towers[0].damage,preview.damage);assert.equal(towers[0].range,preview.range);assert.equal(towers[0].rate,preview.rate);
 reset();selected=0;build('ranger');const reportingTower=towers[0];const victim={hp:3,max:3,kind:'moss',reward:8,dead:false,d:100};hit(victim,100,reportingTower);assert.equal(report.ranger.damage,3);assert.equal(report.ranger.kills,1);hit(victim,100,reportingTower);assert.equal(report.ranger.damage,3);towers=[];assert.equal(report.ranger.kills,1);
-reset();selected=0;build('ranger');gold=1000;upgrade(towers[0]);upgrade(towers[0]);upgrade(towers[0],'A');spawn('moss',170);spawn('moss',150);update(1/60);assert.equal(projectiles.length,2);assert.equal(projectiles[1].damage,projectiles[0].damage*.5);
-reset();selected=0;build('snow');gold=1000;upgrade(towers[0]);upgrade(towers[0]);upgrade(towers[0],'B');spawn('boss',170);hit(enemies[0],1,towers[0]);assert.equal(enemies[0].freeze,1.4);
-reset();selected=0;build('bees');gold=1000;upgrade(towers[0]);upgrade(towers[0]);upgrade(towers[0],'A');spawn('boss',170);update(1/60);assert.ok(swarms[0].life>3);
+reset();selected=0;build('ranger');gold=1000;upgrade(towers[0]);upgrade(towers[0]);upgrade(towers[0],'A');spawn('moss',towers[0].rally);spawn('moss',towers[0].rally-10);update(1/60);assert.equal(projectiles.length,2);assert.equal(projectiles[1].damage,projectiles[0].damage*.5);
+reset();selected=1;build('snow');gold=1000;upgrade(towers[0]);upgrade(towers[0]);upgrade(towers[0],'B');spawn('boss',towers[0].rally);hit(enemies[0],1,towers[0]);assert.equal(enemies[0].freeze,1.4);
+reset();selected=0;build('bees');gold=1000;upgrade(towers[0]);upgrade(towers[0]);upgrade(towers[0],'A');spawn('boss',towers[0].rally);update(1/60);assert.ok(swarms[0].life>3);
 reset();selected=0;build('cave');gold=1000;upgrade(towers[0]);upgrade(towers[0]);upgrade(towers[0],'B');towers[0].guard=at(towers[0].rally);spawn('boss',towers[0].rally);const initialHealth=enemies[0].hp;update(1/60);assert.equal(towers[0].chargeCd,8);assert.ok(initialHealth-enemies[0].hp>=towers[0].damage*2);
 reset();nextWave();update(1/60);assert.ok($('current-wave').textContent.includes('1 on trail'));assert.ok($('current-wave').textContent.includes('10 incoming'));assert.ok($('wave-intel').textContent.includes('UP NEXT'));
 inspected=enemies[0];refresh();assert.equal($('selection').textContent,'Trail scout');assert.ok($('detail').textContent.includes('No armor'));
@@ -100,9 +100,9 @@ assert.equal(wave,8);assert.ok(lives>0);assert.ok(finished);console.log('PASS: a
 `,context);
 
 vm.runInContext(`
-reset();selected=0;build('ranger');spawn('moss',190);spawn('healer',150);towers[0].targeting='healers';update(1/60);assert.equal(projectiles[0].target.kind,'healer');
-reset();selected=0;build('snow');spawn('moss',190);spawn('rock',150);towers[0].targeting='armored';update(1/60);assert.equal(projectiles[0].target.kind,'rock');
-reset();selected=0;build('ranger');spawn('moss',190);spawn('runner',150);towers[0].targeting='healers';update(1/60);assert.equal(projectiles[0].target.kind,'moss');
+reset();selected=0;build('ranger');spawn('moss',towers[0].rally+20);spawn('healer',towers[0].rally-10);towers[0].targeting='healers';update(1/60);assert.equal(projectiles[0].target.kind,'healer');
+reset();selected=1;build('snow');spawn('moss',towers[0].rally+20);spawn('rock',towers[0].rally-10);towers[0].targeting='armored';update(1/60);assert.equal(projectiles[0].target.kind,'rock');
+reset();selected=0;build('ranger');spawn('moss',towers[0].rally+20);spawn('runner',towers[0].rally-10);towers[0].targeting='healers';update(1/60);assert.equal(projectiles[0].target.kind,'moss');
 reset();selectOrder('storm');assert.equal(abilityAim(at(250)).radius,110);assert.ok(abilityAim(at(250)).valid);assert.equal(abilityAim({x:1050,y:40}).valid,false);executeOrder({x:1050,y:40});assert.equal(abilityCooldown.storm,0);assert.equal(orders,'storm');selectOrder('storm');assert.equal(orders,null);selectOrder('hero');assert.equal(orders,null);selectOrder('reinforce');assert.equal(abilityAim(at(250)).radius,28);
 console.log('PASS: healer and armor priorities, fallback, exact ability previews, invalid cast and cancellation.');
 `,context);
@@ -110,4 +110,8 @@ vm.runInContext(`
 reset();spawn('moss',250);reinforcements=[{...at(250),life:.001,cool:0}];const expiredSquadHP=enemies[0].hp;update(.02);assert.equal(enemies[0].hp,expiredSquadHP);assert.equal(enemies[0].blocked,false);assert.equal(reinforcements.length,0);
 reset();selected=0;build('cave');const exhaustedCave=towers[0];exhaustedCave.rally=250;exhaustedCave.guard={...at(250)};exhaustedCave.stamina=.01;spawn('boss',250);const bossHP=enemies[0].hp;update(.1);assert.ok(exhaustedCave.respawn>0);assert.equal(enemies[0].hp,bossHP);assert.equal(enemies[0].blocked,false);
 console.log('PASS: expired temporary defenders and exhausted cave squads stop attacking and blocking immediately.');
+`,context);
+vm.runInContext(`
+for(const map of levels.slice(0,2)){for(const [x,y] of map.sites){for(const route of map.routes||[map.path]){for(let i=1;i<route.length;i++){const a=route[i-1],b=route[i],steps=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1]));for(let j=0;j<=steps;j++){const px=a[0]+(b[0]-a[0])*j/steps,py=a[1]+(b[1]-a[1])*j/steps;const clearance=Math.hypot(Math.max(Math.abs(px-x)-48,0),Math.max(y-125-py,py-y-42,0));assert.ok(clearance>=24,map.id+' site '+x+','+y+' overlaps the trail');}}}}}
+console.log('PASS: full tower artwork footprints clear every enemy route on both maps.');
 `,context);

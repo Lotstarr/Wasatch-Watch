@@ -17,3 +17,20 @@ reset();lives=1;spawn('moss');enemies[0].d=total+1;update(.1);assert.equal(finis
 reset();wave=8;active=true;update(.1);assert.equal(finished,true);assert.equal(JSON.parse(localStorage.getItem('wasatch-campaign')).foothills,3);
 console.log('PASS: build costs, duplicate-site protection, upgrade affordability, unique rewards, leaks, pause, blocking, flyers, defeat and saved victory.');
 `,context);
+vm.runInContext(`
+reset(); selected=0;build('ranger');selected=1;build('snow');
+for(let w=1;w<=8&&!finished;w++){
+ nextWave();
+ for(let tick=0;tick<30000&&active&&!finished;tick++){
+  if(tick%120===0){
+   const order=[[2,'cave'],[3,'ranger'],[5,'bees'],[4,'ranger'],[6,'snow'],[7,'ranger'],[8,'ranger']];
+   const slot=order.find(([site])=>!towers.some(t=>t.site===site));
+   if(slot&&gold>=types[slot[1]].cost){selected=slot[0];build(slot[1]);}
+   else if(!slot){const t=towers.filter(t=>t.tier<4).sort((a,b)=>a.tier-b.tier)[0];if(t&&gold>=upgradeCost(t))upgrade(t,'A');}
+  }
+  update(1/60);
+ }
+}
+assert.equal(wave,8);assert.ok(lives>0);assert.equal(finished,true);
+console.log('PASS: affordable mixed-tower strategy completes all eight waves and the boss with '+lives+' lives.');
+`,context);

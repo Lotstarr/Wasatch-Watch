@@ -40,3 +40,16 @@ reset();selected=0;build('snow');spawn('moss');enemies[0].d=170;for(let i=0;i<60
 reset();selected=0;build('cave');gold=1000;upgrade(towers[0]);upgrade(towers[0]);upgrade(towers[0],'A');assert.equal(towers[0].rate,.8);assert.equal(towers[0].tier,4);
 console.log('PASS: projectiles delay damage until impact, snow control applies on impact, and Defensive Line keeps its stated attack rate.');
 `,context);
+vm.runInContext(`
+localStorage.setItem('wasatch-campaign','{}');assert.equal(loadLevel(1),false);assert.equal(level.id,'foothills');lives=20;finish(true);assert.equal(unlocked(1),true);assert.equal(loadLevel(1),true);assert.equal(level.id,'canyon');assert.equal(gold,290);assert.equal(towers.length,0);assert.equal(at(total).x,1120);
+const shield={hp:100,kind:'rock',reward:14,dead:false,d:0};hit(shield,20,{kind:'ranger'});assert.equal(shield.hp,89);hit(shield,20,{kind:'ranger',branch:'B'});assert.equal(shield.hp,69);
+reset();selected=0;build('ranger');selected=1;build('snow');
+for(let w=1;w<=8&&!finished;w++){nextWave();for(let tick=0;tick<40000&&active&&!finished;tick++){if(tick%120===0){const order=[[2,'cave'],[3,'ranger'],[5,'bees'],[4,'ranger'],[6,'snow'],[7,'ranger'],[8,'ranger']];const slot=order.find(([site])=>!towers.some(t=>t.site===site));if(slot&&gold>=types[slot[1]].cost){selected=slot[0];build(slot[1]);}else if(!slot){const t=towers.filter(t=>t.tier<4).sort((a,b)=>a.tier-b.tier)[0];if(t&&gold>=upgradeCost(t))upgrade(t,'A');}}update(1/60);}}
+assert.equal(wave,8);assert.ok(lives>0);assert.equal(finished,true);const canyonVictoryLives=lives;assert.ok(progress().canyon>0);assert.equal(loadLevel(2),false);assert.equal(progress().foothills,3);const best=progress().canyon;lives=1;finish(true);assert.equal(progress().canyon,best);localStorage.setItem('wasatch-campaign','null');assert.equal(unlocked(1),false);
+console.log('PASS: campaign locks, per-level saves, best-star preservation, armor bypass, and full Provo Canyon victory with '+canyonVictoryLives+' lives.');
+`,context);
+vm.runInContext(`
+level=levels[0];configureMap();reset();const armorTarget={hp:100,kind:'rock',reward:14,dead:false,d:0,freezeCooldown:0};hit(armorTarget,20,{kind:'snow'});assert.equal(armorTarget.hp,73);assert.ok(armorTarget.slow>0);
+selected=0;build('bees');spawn('moss');spawn('flyer');spawn('rock');for(const e of enemies)e.d=170;update(1/60);assert.equal(swarms.length,3);assert.equal(new Set(swarms.map(s=>s.target)).size,3);assert.equal(towers[0].damage,2);for(let i=0;i<100;i++)update(1/60);assert.ok(enemies.every(e=>e.hp<e.max));
+console.log('PASS: Snowmaker bypasses shields with 35% bonus damage; Beehive launches lowered-damage swarms at every in-range enemy.');
+`,context);

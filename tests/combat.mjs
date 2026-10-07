@@ -11,7 +11,7 @@ let t=towers[0];upgrade(t);assert.equal(t.tier,2);assert.equal(gold,100);upgrade
 let e={hp:1,kind:'moss',reward:8,dead:false,d:0};hit(e,20,t);assert.equal(gold,108);hit(e,20,t);assert.equal(gold,108);
 reset();spawn('moss');enemies[0].d=total+1;update(1/60);assert.equal(lives,19);assert.equal(gold,270);
 reset();nextWave();paused=true;update(1);assert.equal(clock,0);assert.equal(enemies.length,0);paused=false;update(1);assert.ok(enemies.length>0);
-reset();selected=0;build('cave');let cave=towers[0];spawn('moss');let enemy=enemies[0];enemy.d=cave.rally;let old=enemy.d;update(.1);assert.equal(enemy.d,old);assert.ok(enemy.hp<enemy.max);
+reset();selected=0;build('cave');let cave=towers[0];cave.guard=at(cave.rally);spawn('moss');let enemy=enemies[0];enemy.d=cave.rally;let old=enemy.d;update(.1);assert.equal(enemy.d,old);assert.ok(enemy.hp<enemy.max);
 reset();selected=0;build('cave');cave=towers[0];spawn('flyer');enemy=enemies[0];enemy.d=cave.rally;old=enemy.d;update(.1);assert.ok(enemy.d>old);
 reset();lives=1;spawn('moss');enemies[0].d=total+1;update(.1);assert.equal(finished,true);assert.equal(lives,0);
 reset();wave=8;active=true;update(.1);assert.equal(finished,true);assert.equal(JSON.parse(localStorage.getItem('wasatch-campaign')).foothills,3);
@@ -60,4 +60,15 @@ reset();selected=0;build('ranger');spawn('moss',180);spawn('rock',150);towers[0]
 reset();selected=0;build('ranger');spawn('moss',180);spawn('rock',150);update(1/60);assert.equal(projectiles[0].target.kind,'moss');
 reset();const expected=Object.values(wavePlans.canyon[0][1]).reduce((a,b)=>a+b,0);nextWave();assert.equal(pending.length,expected);assert.ok(wavePreview().includes('Shield guards'));assert.ok(wavePreview().includes('Flyers'));
 console.log('PASS: splitter children and rewards occur once, all three targeting priorities, and previews match authored wave plans.');
+`,context);
+vm.runInContext(`
+level=levels[0];configureMap();reset();selected=0;build('cave');const movingCave=towers[0],home={...movingCave.guard};update(.1);assert.ok(Math.hypot(movingCave.guard.x-home.x,movingCave.guard.y-home.y)>0);assert.equal(movingCave.deployed,false);for(let i=0;i<150;i++)update(1/60);assert.ok(movingCave.deployed);assert.ok(Math.hypot(movingCave.guard.x-at(movingCave.rally).x,movingCave.guard.y-at(movingCave.rally).y)<8);movingCave.respawn=6;const rallyLocation={...movingCave.guard};update(.1);assert.equal(movingCave.deployed,false);assert.ok(Math.hypot(movingCave.guard.x-home.x,movingCave.guard.y-home.y)<Math.hypot(rallyLocation.x-home.x,rallyLocation.y-home.y));
+reset();wave=1;active=true;const preBonus=gold;update(1/60);assert.equal(gold,preBonus+13);update(1/60);assert.equal(gold,preBonus+13);
+console.log('PASS: defenders travel before blocking, retreat while regrouping, and wave-clear bonus is awarded once.');
+`,context);
+vm.runInContext(readFileSync(new URL('../public/art.js',import.meta.url),'utf8'),context);
+vm.runInContext(`
+const drawingMethods=['clearRect','fillRect','beginPath','ellipse','fill','stroke','lineTo','moveTo','closePath','fillText','arc','save','restore','translate','scale','rotate','strokeRect','setLineDash','drawImage','bezierCurveTo'];for(const method of drawingMethods)ctx[method]=()=>{};ctx.createLinearGradient=()=>({addColorStop(){}});const originalCreateElement=document.createElement;document.createElement=(tag)=>{const el=originalCreateElement(tag);if(tag==='canvas')el.getContext=()=>ctx;return el;};
+for(const map of levels.slice(0,2)){level=map;configureMap();reset();gold=10000;for(let i=0;i<4;i++){selected=i;build(['ranger','snow','bees','cave'][i]);for(let tier=0;tier<i;tier++)upgrade(towers[i],'A');}for(const kind of ['moss','runner','rock','flyer','boss','splitter','shard'])spawn(kind,260);enemies[0].freeze=1;enemies[1].slow=1;enemies[2].blocked=true;draw();paused=true;draw();}
+console.log('PASS: both illustrated maps, tower tiers, every enemy type, status overlays and pause render without errors.');
 `,context);

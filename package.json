@@ -1,0 +1,1 @@
+{"name":"wasatch-watch","version":"0.1.0","private":true,"type":"module","scripts":{"test":"node tests/combat.mjs","dev":"python3 -m http.server 8790 --directory public --bind 127.0.0.1"}}

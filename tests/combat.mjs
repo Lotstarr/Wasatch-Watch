@@ -34,3 +34,9 @@ for(let w=1;w<=8&&!finished;w++){
 assert.equal(wave,8);assert.ok(lives>0);assert.equal(finished,true);
 console.log('PASS: affordable mixed-tower strategy completes all eight waves and the boss with '+lives+' lives.');
 `,context);
+vm.runInContext(`
+reset();selected=0;build('ranger');spawn('moss');enemies[0].d=170;const before=enemies[0].hp;update(1/60);assert.equal(enemies[0].hp,before);assert.equal(projectiles.length,1);for(let i=0;i<30;i++)update(1/60);assert.ok(enemies[0].hp<before);
+reset();selected=0;build('snow');spawn('moss');enemies[0].d=170;for(let i=0;i<60;i++)update(1/60);assert.ok(enemies[0].slow>0);assert.ok(enemies[0].freezeCooldown>0);
+reset();selected=0;build('cave');gold=1000;upgrade(towers[0]);upgrade(towers[0]);upgrade(towers[0],'A');assert.equal(towers[0].rate,.8);assert.equal(towers[0].tier,4);
+console.log('PASS: projectiles delay damage until impact, snow control applies on impact, and Defensive Line keeps its stated attack rate.');
+`,context);

@@ -14,3 +14,8 @@ Run `python3 -m http.server 8790 --directory public` in this folder, then visit 
 Provo Canyon unlocks after Campus Foothills victory. Campaign cards show saved stars and four upcoming levels. Snowmaker magic bypasses shield armor with 35% bonus damage; Beehives launch lower-damage tracking swarms at every in-range enemy. Maps 3–6 and broader balance testing are subsequent milestones. This project has its own GitHub repository and Cloudflare Worker; automatic GitHub deployment is not connected yet. The existing live Iron Tide game is unaffected.
 
 Run `npm test` to verify economy, blocking, pause, reward uniqueness, victory/defeat, and an affordable full eight-wave mixed-tower strategy.
+
+## Gameplay update
+Each level has eight authored wave compositions and previews listing enemy counts. Provo Canyon introduces copper living-stone splitters in wave three; each defeated splitter releases two fast shards at its current trail position. Rangers and Snowmakers offer First, Strongest, and Flyers priorities (Flyers falls back to First). Beehives always attack all in-range enemies. Tower upgrades gain supports, gold reinforcement, and tier-four branch rings.
+
+Full mixed-defense simulations finish Campus Foothills with 15 lives and Provo Canyon with 20. A separate Beehive-only strategy finishes with 13 and 15 respectively; this comparison is a starting balance check, with human playtesting still needed.

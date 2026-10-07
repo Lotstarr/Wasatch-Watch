@@ -53,3 +53,11 @@ level=levels[0];configureMap();reset();const armorTarget={hp:100,kind:'rock',rew
 selected=0;build('bees');spawn('moss');spawn('flyer');spawn('rock');for(const e of enemies)e.d=170;update(1/60);assert.equal(swarms.length,3);assert.equal(new Set(swarms.map(s=>s.target)).size,3);assert.equal(towers[0].damage,2);for(let i=0;i<100;i++)update(1/60);assert.ok(enemies.every(e=>e.hp<e.max));
 console.log('PASS: Snowmaker bypasses shields with 35% bonus damage; Beehive launches lowered-damage swarms at every in-range enemy.');
 `,context);
+vm.runInContext(`
+reset();level=levels[1];configureMap();reset();wave=3;spawn('splitter',300);const parent=enemies[0],startingGold=gold;hit(parent,1000,{kind:'ranger'});assert.equal(enemies.filter(e=>e.kind==='shard').length,2);assert.equal(gold,startingGold+6);assert.ok(enemies.filter(e=>e.kind==='shard').every(e=>e.d<=300&&e.d>=284));hit(parent,1000,{kind:'ranger'});assert.equal(enemies.filter(e=>e.kind==='shard').length,2);
+reset();selected=0;build('ranger');spawn('moss',180);spawn('flyer',150);towers[0].targeting='flyers';update(1/60);assert.equal(projectiles[0].target.kind,'flyer');
+reset();selected=0;build('ranger');spawn('moss',180);spawn('rock',150);towers[0].targeting='strongest';update(1/60);assert.equal(projectiles[0].target.kind,'rock');
+reset();selected=0;build('ranger');spawn('moss',180);spawn('rock',150);update(1/60);assert.equal(projectiles[0].target.kind,'moss');
+reset();const expected=Object.values(wavePlans.canyon[0][1]).reduce((a,b)=>a+b,0);nextWave();assert.equal(pending.length,expected);assert.ok(wavePreview().includes('Shield guards'));assert.ok(wavePreview().includes('Flyers'));
+console.log('PASS: splitter children and rewards occur once, all three targeting priorities, and previews match authored wave plans.');
+`,context);

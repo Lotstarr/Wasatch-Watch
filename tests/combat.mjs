@@ -72,3 +72,14 @@ const drawingMethods=['clearRect','fillRect','beginPath','ellipse','fill','strok
 for(const map of levels.slice(0,2)){level=map;configureMap();reset();gold=10000;for(let i=0;i<4;i++){selected=i;build(['ranger','snow','bees','cave'][i]);for(let tier=0;tier<i;tier++)upgrade(towers[i],'A');}for(const kind of ['moss','runner','rock','flyer','boss','splitter','shard'])spawn(kind,260);enemies[0].freeze=1;enemies[1].slow=1;enemies[2].blocked=true;draw();paused=true;draw();}
 console.log('PASS: both illustrated maps, tower tiers, every enemy type, status overlays and pause render without errors.');
 `,context);
+vm.runInContext(`
+level=levels[0];configureMap();reset();selected=0;build('ranger');gold=1000;let preview=upgradeStats(towers[0]);upgrade(towers[0]);assert.equal(towers[0].damage,preview.damage);assert.equal(towers[0].range,preview.range);assert.equal(towers[0].rate,preview.rate);upgrade(towers[0]);preview=upgradeStats(towers[0],'B');upgrade(towers[0],'B');assert.equal(towers[0].damage,preview.damage);assert.equal(towers[0].range,preview.range);assert.equal(towers[0].rate,preview.rate);
+reset();selected=0;build('ranger');const reportingTower=towers[0];const victim={hp:3,max:3,kind:'moss',reward:8,dead:false,d:100};hit(victim,100,reportingTower);assert.equal(report.ranger.damage,3);assert.equal(report.ranger.kills,1);hit(victim,100,reportingTower);assert.equal(report.ranger.damage,3);towers=[];assert.equal(report.ranger.kills,1);
+reset();selected=0;build('ranger');gold=1000;upgrade(towers[0]);upgrade(towers[0]);upgrade(towers[0],'A');spawn('moss',170);spawn('moss',150);update(1/60);assert.equal(projectiles.length,2);assert.equal(projectiles[1].damage,projectiles[0].damage*.5);
+reset();selected=0;build('snow');gold=1000;upgrade(towers[0]);upgrade(towers[0]);upgrade(towers[0],'B');spawn('boss',170);hit(enemies[0],1,towers[0]);assert.equal(enemies[0].freeze,1.4);
+reset();selected=0;build('bees');gold=1000;upgrade(towers[0]);upgrade(towers[0]);upgrade(towers[0],'A');spawn('boss',170);update(1/60);assert.ok(swarms[0].life>3);
+reset();selected=0;build('cave');gold=1000;upgrade(towers[0]);upgrade(towers[0]);upgrade(towers[0],'B');towers[0].guard=at(towers[0].rally);spawn('boss',towers[0].rally);const initialHealth=enemies[0].hp;update(1/60);assert.equal(towers[0].chargeCd,8);assert.ok(initialHealth-enemies[0].hp>=towers[0].damage*2);
+reset();nextWave();update(1/60);assert.ok($('current-wave').textContent.includes('1 on trail'));assert.ok($('current-wave').textContent.includes('10 incoming'));assert.ok($('wave-intel').textContent.includes('UP NEXT'));
+inspected=enemies[0];refresh();assert.equal($('selection').textContent,'Trail scout');assert.ok($('detail').textContent.includes('No armor'));
+console.log('PASS: exact upgrade previews, capped damage and sold-tower attribution, paired arrows, Frost Mage freezes, extended swarms, Blitz charges, wave counters and enemy inspection.');
+`,context);

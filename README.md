@@ -22,3 +22,10 @@ Full mixed-defense simulations finish Campus Foothills with 15 lives and Provo C
 
 ## Illustrated combat update
 Both maps now use original canvas artwork: shaded terrain, mountain ridges, forest details, a campus stronghold, illustrated tower tiers and distinct animated enemy silhouettes. Provo Canyon has river scenery. The parchment command panel provides compact targeting controls, a collapsible field guide and build-range previews. Defender squads move to rally points before blocking, animate while tackling, and retreat during regrouping. Each non-final cleared wave awards 10 + 3 × wave gold once. Terrain is cached and transient effects are capped for steadier rendering.
+
+## Tactics and battle reports
+The heading separates the current wave (on-trail and incoming counts) from the next wave's composition. Upgrade buttons preview exact damage, range, launch/attack interval and defender changes. Click a living enemy to inspect health, armor, abilities and counters; Escape clears selection.
+
+Tier-four roles: Rapid Ranger fires a secondary arrow at half damage; Sharpshooter gains armor bypass, extra range and a slower high-damage shot. Snowstorm splashes within 70 trail units; Frost Mage freezes for 1.4 seconds with a three-second cooldown. Swarm Keeper launches faster and sustains swarms for 3.2 seconds; Honey Trap slows targets. Defensive Line holds four enemies with half stamina drain; Blitz Squad charges for double tackle damage every eight seconds and regroups in three seconds. Branches have distinct tower embellishments.
+
+Victory and defeat include a damage/kills table by tower type. Damage is capped to actual health removed; finishing blows earn kills. Sold towers' contributions remain in the report.

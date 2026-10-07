@@ -1,3 +1,4 @@
+import './art.js?v=illustrated-1';
 const canvas=document.querySelector('#game'),ctx=canvas.getContext('2d'),$=id=>document.getElementById(id);
 const levels=[
 {id:'foothills',name:'Campus Foothills',description:'Hold the canyon trail above the valley.',gold:270,path:[[-35,125],[180,125],[290,250],[480,250],[580,440],[810,440],[930,565],[1120,565]],sites:[[135,215],[280,145],[365,340],[500,155],[530,525],[665,345],[780,535],[890,340],[965,465]]},

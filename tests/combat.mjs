@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 const elements=new Map();const element=()=>({textContent:'',innerHTML:'',disabled:false,style:{},children:[],append(x){this.children.push(x)},replaceChildren(){this.children=[]},close(){},showModal(){},addEventListener(){},getContext(){return {}},getBoundingClientRect(){return{left:0,top:0,width:1080,height:680}}});
 const document={getElementById(id){if(!elements.has(id))elements.set(id,element());return elements.get(id)},querySelector(){return element()},createElement(){return element()},addEventListener(){}};
 const save=new Map();const context=vm.createContext({document,window:{addEventListener(){}},HTMLElement:class{},performance:{now:()=>0},requestAnimationFrame(){},localStorage:{getItem:k=>save.get(k),setItem:(k,v)=>save.set(k,v)},assert,console});
-vm.runInContext(readFileSync(new URL('../public/game.js',import.meta.url),'utf8'),context);
+vm.runInContext(readFileSync(new URL('../public/game.js',import.meta.url),'utf8').replace(/^import .*;\n/,''),context);
 vm.runInContext(`
 reset(); selected=0; build('ranger');assert.equal(gold,190);assert.equal(towers.length,1);build('ranger');assert.equal(towers.length,1);
 let t=towers[0];upgrade(t);assert.equal(t.tier,2);assert.equal(gold,100);upgrade(t);assert.equal(t.tier,2);assert.equal(gold,100);

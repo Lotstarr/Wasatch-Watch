@@ -106,3 +106,8 @@ reset();selected=0;build('ranger');spawn('moss',190);spawn('runner',150);towers[
 reset();selectOrder('storm');assert.equal(abilityAim(at(250)).radius,110);assert.ok(abilityAim(at(250)).valid);assert.equal(abilityAim({x:1050,y:40}).valid,false);executeOrder({x:1050,y:40});assert.equal(abilityCooldown.storm,0);assert.equal(orders,'storm');selectOrder('storm');assert.equal(orders,null);selectOrder('hero');assert.equal(orders,null);selectOrder('reinforce');assert.equal(abilityAim(at(250)).radius,28);
 console.log('PASS: healer and armor priorities, fallback, exact ability previews, invalid cast and cancellation.');
 `,context);
+vm.runInContext(`
+reset();spawn('moss',250);reinforcements=[{...at(250),life:.001,cool:0}];const expiredSquadHP=enemies[0].hp;update(.02);assert.equal(enemies[0].hp,expiredSquadHP);assert.equal(enemies[0].blocked,false);assert.equal(reinforcements.length,0);
+reset();selected=0;build('cave');const exhaustedCave=towers[0];exhaustedCave.rally=250;exhaustedCave.guard={...at(250)};exhaustedCave.stamina=.01;spawn('boss',250);const bossHP=enemies[0].hp;update(.1);assert.ok(exhaustedCave.respawn>0);assert.equal(enemies[0].hp,bossHP);assert.equal(enemies[0].blocked,false);
+console.log('PASS: expired temporary defenders and exhausted cave squads stop attacking and blocking immediately.');
+`,context);
